@@ -10,6 +10,7 @@ from omnihealth.contracts import DataContractError, read_events
 from omnihealth.pipeline import run_pipeline
 from omnihealth.quality import validate_events
 from omnihealth.reporting import VIEWS, read_report, report_csv, report_markdown
+from omnihealth.synthetic import generate_events
 
 
 def positive_integer(value: str) -> int:
@@ -30,6 +31,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="OmniHealth AI ETL and analytics")
     parser.add_argument("--version", action="version", version=f"OmniHealth {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
+    generate = subparsers.add_parser("generate", help="Create labeled synthetic benchmark events")
+    generate.add_argument("--output", required=True)
+    generate.add_argument("--sessions", type=positive_integer, default=1000)
+    generate.add_argument("--seed", type=int, default=42)
+    generate.add_argument("--conversion-probability", type=fraction, default=0.25)
+    generate.add_argument("--overwrite", action="store_true")
     report = subparsers.add_parser("report", help="Read metrics from a completed pandas run")
     report.add_argument("--output-dir", required=True)
     report.add_argument("--view", choices=sorted(VIEWS), default="overall")
@@ -61,7 +68,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _execute(args: argparse.Namespace) -> dict:
-    if args.command == "report":
+    if args.command == "generate":
+        return generate_events(args.output, args.sessions, args.seed,
+                               args.conversion_probability, args.overwrite)
+    elif args.command == "report":
         return read_report(args.output_dir, args.view)
     elif args.command == "validate":
         raw = read_events(args.input, args.limit_rows)
