@@ -273,6 +273,8 @@ python -m compileall -q src    # syntax check
 
 GitHub Actions installs the package, lints it, runs tests, executes the demo CLI, and checks generated files. The optional Spark integration test is disabled by default; run it explicitly when Spark and Java are installed, or trigger the separate **Optional PySpark smoke test** workflow manually from GitHub Actions after pushing the repository.
 
+The [core workflow](.github/workflows/ci.yml) runs on pushes and pull requests to `main`. To run the [Spark workflow](.github/workflows/spark-smoke.yml), open the repository's **Actions** tab, select **Optional PySpark smoke test**, and choose **Run workflow**. It uses Python 3.11, Java 17, and two local Spark workers; it does not provision a distributed cluster. See [GitHub's Python workflow guide](https://docs.github.com/en/actions/tutorials/build-and-test-code/python) for the setup pattern.
+
 ## Current limitations and milestones
 
 Phase 1 does **not** establish model accuracy, causal uplift, pharmaceutical conversion, digital channel attribution, or production-scale SLOs. These require additional data and evaluation. The [roadmap](docs/roadmap.md) proposes a leakage-resistant, temporally evaluated retail conversion propensity baseline, with a separate healthcare-inspired synthetic demonstration only after factual retail modeling is established.
