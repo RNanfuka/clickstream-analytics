@@ -9,6 +9,7 @@ from omnihealth import __version__
 from omnihealth.contracts import DataContractError, read_events
 from omnihealth.pipeline import run_pipeline
 from omnihealth.quality import validate_events
+from omnihealth.reporting import VIEWS, read_report
 
 
 def positive_integer(value: str) -> int:
@@ -29,6 +30,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="OmniHealth AI ETL and analytics")
     parser.add_argument("--version", action="version", version=f"OmniHealth {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
+    report = subparsers.add_parser("report", help="Read metrics from a completed pandas run")
+    report.add_argument("--output-dir", required=True)
+    report.add_argument("--view", choices=sorted(VIEWS), default="overall")
     validate = subparsers.add_parser("validate", help="Inspect CSV quality without writing outputs")
     validate.add_argument("--input", required=True)
     validate.add_argument("--source-type", required=True,
@@ -56,7 +60,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _execute(args: argparse.Namespace) -> dict:
-    if args.command == "validate":
+    if args.command == "report":
+        return read_report(args.output_dir, args.view)
+    elif args.command == "validate":
         raw = read_events(args.input, args.limit_rows)
         if raw.empty:
             raise DataContractError("Input CSV contains no event rows")
