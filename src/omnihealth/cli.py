@@ -6,7 +6,9 @@ import argparse
 import json
 
 from omnihealth import __version__
+from omnihealth.contracts import DataContractError, read_events
 from omnihealth.pipeline import run_pipeline
+from omnihealth.quality import validate_events
 
 
 def positive_integer(value: str) -> int:
@@ -27,6 +29,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="OmniHealth AI ETL and analytics")
     parser.add_argument("--version", action="version", version=f"OmniHealth {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
+    validate = subparsers.add_parser("validate", help="Inspect CSV quality without writing outputs")
+    validate.add_argument("--input", required=True)
+    validate.add_argument("--source-type", required=True,
+                          choices=["retailrocket", "synthetic_fixture"])
+    validate.add_argument("--limit-rows", type=positive_integer, default=None)
+    validate.add_argument("--max-rejected-fraction", type=fraction, default=0.01)
     run = subparsers.add_parser("run", help="Run validated pandas clickstream ETL")
     run.add_argument("--input", required=True, help="Path to events.csv")
     run.add_argument("--output-dir", required=True, help="Destination for generated artifacts")
@@ -48,7 +56,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _execute(args: argparse.Namespace) -> dict:
-    if args.command == "run":
+    if args.command == "validate":
+        raw = read_events(args.input, args.limit_rows)
+        if raw.empty:
+            raise DataContractError("Input CSV contains no event rows")
+        report = validate_events(raw).report
+        report["source_type"] = args.source_type
+        report["validation_passed"] = (
+            report["rows_valid"] > 0
+            and report["rows_rejected"] / report["rows_read"] <= args.max_rejected_fraction
+        )
+        return report
+    elif args.command == "run":
         summary = run_pipeline(
             input_path=args.input,
             output_dir=args.output_dir,
@@ -78,6 +97,8 @@ def main() -> None:
     except (ValueError, OSError) as exc:
         parser.exit(2, f"error: {exc}\n")
     print(json.dumps(summary, indent=2))
+    if args.command == "validate" and not summary["validation_passed"]:
+        parser.exit(2)
 
 
 if __name__ == "__main__":

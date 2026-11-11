@@ -41,3 +41,21 @@ def test_cli_produces_parseable_summary(tmp_path):
                  "--output-dir", str(tmp_path / "out"), "--source-type", "synthetic_fixture")
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout)["sessions"] == 8
+
+
+def test_validate_reports_failure_without_creating_analytics(tmp_path):
+    source = tmp_path / "input.csv"
+    source.write_text("timestamp,visitorid,event,itemid,transactionid\nbad,a,view,1,\n")
+    result = cli("validate", "--input", str(source), "--source-type", "synthetic_fixture")
+    assert result.returncode == 2
+    report = json.loads(result.stdout)
+    assert report["rows_rejected"] == 1
+    assert report["validation_passed"] is False
+    assert list(tmp_path.iterdir()) == [source]
+
+
+def test_validate_reports_success():
+    result = cli("validate", "--input", "data/samples/synthetic_retail_events.csv",
+                 "--source-type", "synthetic_fixture")
+    assert result.returncode == 0
+    assert json.loads(result.stdout)["validation_passed"] is True
