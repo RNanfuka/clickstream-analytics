@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import shutil
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
+from omnihealth.artifacts import write_json
 from omnihealth.contracts import DataContractError
 
 FACTS = (
@@ -49,11 +49,10 @@ def pipeline_run(input_path: str | Path, output_dir: str | Path):
     started = datetime.now(UTC).isoformat()
 
     def save(status, **extra):
-        status_path.parent.mkdir(parents=True, exist_ok=True)
-        status_path.write_text(json.dumps({
+        write_json(status_path, {
             "status": status, "started_at_utc": started,
             "updated_at_utc": datetime.now(UTC).isoformat(), **extra,
-        }, indent=2) + "\n")
+        })
 
     try:
         _remove_managed(output, FACTS + AUDITS)

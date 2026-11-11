@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-import json
+import os
 import sqlite3
 from datetime import UTC, datetime
 from importlib.resources import files
 from pathlib import Path
+from tempfile import mkstemp
 
 import pandas as pd
 
+from omnihealth.artifacts import write_json as _write_json
 from omnihealth.contracts import DataContractError, read_events
 from omnihealth.provenance import input_manifest
 from omnihealth.quality import validate_events
@@ -19,17 +21,12 @@ from omnihealth.sessions import sessionize
 SQL_MARTS = files("omnihealth").joinpath("sql/marts.sql")
 
 
-def _write_json(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-
-
 def build_sqlite(events: pd.DataFrame, sessions: pd.DataFrame, database_path: Path) -> None:
     """Rebuild analytics database atomically in a temporary local file."""
     database_path.parent.mkdir(parents=True, exist_ok=True)
-    temp_path = database_path.with_suffix(".tmp.db")
-    if temp_path.exists():
-        temp_path.unlink()
+    descriptor, filename = mkstemp(prefix=".omnihealth-", suffix=".db", dir=database_path.parent)
+    os.close(descriptor)
+    temp_path = Path(filename)
     try:
         with sqlite3.connect(temp_path) as connection:
             # Explicit types and values for simple portable SQLite usage.
