@@ -1,0 +1,9 @@
+name: omnihealth
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - openjdk=17
+  - pip:
+      - -e .[dev,spark]
