@@ -34,6 +34,35 @@ SELECT
     ROUND(AVG(duration_seconds), 2) AS average_session_duration_seconds
 FROM session_facts;
 
+-- A session-level sequence with strictly increasing timestamps. Equal-time events
+-- cannot establish ordering; no item-level or marketing-attribution claim is made.
+DROP VIEW IF EXISTS v_ordered_session_funnel;
+CREATE VIEW v_ordered_session_funnel AS
+WITH first_views AS (
+    SELECT session_id, MIN(event_ts) AS view_at
+    FROM event_facts WHERE event_type = 'view' GROUP BY session_id
+), first_carts AS (
+    SELECT e.session_id, MIN(e.event_ts) AS cart_at
+    FROM event_facts e JOIN first_views v ON e.session_id = v.session_id
+    WHERE e.event_type = 'addtocart' AND e.event_ts > v.view_at
+    GROUP BY e.session_id
+), first_purchases AS (
+    SELECT e.session_id, MIN(e.event_ts) AS purchase_at
+    FROM event_facts e JOIN first_carts c ON e.session_id = c.session_id
+    WHERE e.event_type = 'transaction' AND e.event_ts > c.cart_at
+    GROUP BY e.session_id
+)
+SELECT COUNT(*) AS total_sessions,
+       COUNT(v.session_id) AS sessions_with_view,
+       COUNT(c.session_id) AS sessions_with_later_cart,
+       COUNT(p.session_id) AS sessions_with_later_purchase,
+       ROUND(1.0 * COUNT(p.session_id) / NULLIF(COUNT(v.session_id), 0), 4)
+           AS view_to_purchase_rate
+FROM session_facts s
+LEFT JOIN first_views v ON s.session_id = v.session_id
+LEFT JOIN first_carts c ON s.session_id = c.session_id
+LEFT JOIN first_purchases p ON s.session_id = p.session_id;
+
 DROP VIEW IF EXISTS v_visitor_kpis;
 CREATE VIEW v_visitor_kpis AS
 SELECT visitor_id,

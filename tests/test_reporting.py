@@ -58,3 +58,26 @@ def test_visitor_metrics_reconcile_with_session_and_event_totals(completed_run):
     for row in rows:
         assert row["first_observed_session"] <= row["last_observed_event"]
         assert (row["observed_session_type"] == "multiple_sessions") == (row["session_count"] > 1)
+
+
+def test_ordered_funnel_excludes_reversed_and_simultaneous_events(tmp_path):
+    source = tmp_path / "funnel.csv"
+    source.write_text(
+        "timestamp,visitorid,event,itemid,transactionid\n"
+        "1433221200000,a,view,1,\n1433221201000,a,addtocart,1,\n"
+        "1433221202000,a,transaction,1,order_a\n"
+        "1433221200000,b,addtocart,1,\n1433221201000,b,view,1,\n"
+        "1433221202000,b,transaction,1,order_b\n"
+        "1433221200000,c,view,1,\n1433221200000,c,addtocart,1,\n"
+        "1433221200000,c,transaction,1,order_c\n"
+        "1433221200000,d,transaction,1,order_d\n"
+    )
+    output = tmp_path / "out"
+    run_pipeline(source, output, "synthetic_fixture")
+    funnel = read_report(output, "funnel")["rows"][0]
+    assert funnel["total_sessions"] == 4
+    assert funnel["sessions_with_view"] == 3
+    assert funnel["sessions_with_later_cart"] == 1
+    assert funnel["sessions_with_later_purchase"] == 1
+    assert funnel["view_to_purchase_rate"] == 0.3333
+    assert read_report(output, "stages")["rows"][0]["sessions_with_transaction"] == 4
