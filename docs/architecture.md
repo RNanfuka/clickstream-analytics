@@ -6,7 +6,7 @@ Marketing analytics and data solutions consultants who need to translate event d
 
 ## Context and constraints
 
-- Actual source: RetailRocket anonymized e-commerce events only.
+- Accepted real-data source: RetailRocket anonymized e-commerce events. Included fixtures and generated benchmarks are synthetic and labeled separately.
 - Phase 1's transaction proxy is not a patient, HCP, prescription, or medical outcome.
 - Original events do not contain channel IDs, campaign spend, impressions, creative, demographics, or marketing exposures.
 - Source records may legitimately contain repeated user actions; retain event duplicates and report their frequency instead of silently dropping them.
@@ -36,10 +36,10 @@ A marketing analyst can audit whether transaction-event sessions changed over ti
 ## Known limitations and next hardening tasks
 
 - Pandas reads the full CSV into memory; PySpark is the optional scaling path.
-- Phase 1 does not ensure full ACID semantics across multiple CSV/SQLite outputs. Each SQLite rebuild uses a temporary file and replacement, but multi-artifact writes are not transactional.
+- Output directories are locked during processing. Reports expose running/failed/complete status. Failed runs remove managed analytical results and preserve quality audits; reporting requires complete status. File replacement protects individual JSON and SQLite writes, but the entire directory is not an ACID transaction.
 - Visitor sessions based on inactivity are inferred; no true first-party session identifier is provided.
 - Session IDs remain stable for the same whole-dataset input, but appending previously unseen earlier events could renumber sessions for a visitor.
 - Distinct orders are counted *within* session, not across the whole dataset.
 - Day-level SQL marts are descriptive, not predictive or causal.
 - Invalid rows are retained in a local audit file: assess privacy handling before processing any sensitive future datasets.
-- Spark and pandas output formats differ; cross-engine parity tests and distributed performance benchmarks are planned.
+- Spark and pandas output formats differ. Synthetic session-boundary parity tests pass; distributed-cluster performance remains unmeasured.
