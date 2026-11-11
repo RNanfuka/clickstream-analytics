@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import csv
+from collections import Counter
+from pathlib import Path
+
 import pandas as pd
 
 RAW_COLUMNS = ("timestamp", "visitorid", "event", "itemid", "transactionid")
@@ -19,14 +23,23 @@ def read_events(path: str, limit_rows: int | None = None) -> pd.DataFrame:
     if limit_rows is not None and limit_rows <= 0:
         raise ValueError("limit_rows must be positive")
     try:
+        with Path(path).open(encoding="utf-8-sig", newline="") as stream:
+            header = next((row for row in csv.reader(stream, strict=True) if row), [])
+        if not header:
+            raise DataContractError("Input CSV is empty")
+        duplicates = sorted(name for name, count in Counter(header).items() if count > 1)
+        if duplicates:
+            raise DataContractError(f"Duplicate CSV columns: {', '.join(duplicates)}")
         frame = pd.read_csv(
             path,
             dtype="string",
             keep_default_na=False,
             nrows=limit_rows,
         )
-    except (OSError, pd.errors.ParserError) as exc:
+    except (OSError, UnicodeError, csv.Error, pd.errors.ParserError, pd.errors.EmptyDataError) as exc:
         raise DataContractError(f"Unable to read input CSV: {exc}") from exc
+    if not isinstance(frame.index, pd.RangeIndex):
+        raise DataContractError("Input CSV contains more fields than its header")
     missing = set(RAW_COLUMNS).difference(frame.columns)
     if missing:
         raise DataContractError(f"Missing required columns: {', '.join(sorted(missing))}")
