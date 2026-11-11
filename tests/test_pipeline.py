@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 from pathlib import Path
@@ -97,3 +98,15 @@ def test_quality_threshold_uses_unrounded_fraction(tmp_path):
     with pytest.raises(DataContractError, match="quality gate"):
         run_pipeline(source, tmp_path / "out", "synthetic_fixture",
                      max_rejected_fraction=0.33333333)
+
+
+def test_run_records_input_fingerprint_versions_and_prefix_scope(tmp_path):
+    summary = run_pipeline(SAMPLE, tmp_path / "out", "synthetic_fixture", limit_rows=5)
+    assert summary["input_sha256"] == hashlib.sha256(SAMPLE.read_bytes()).hexdigest()
+    assert summary["input_size_bytes"] == SAMPLE.stat().st_size
+    assert summary["limit_rows"] == 5
+    assert summary["input_scope"] == "prefix"
+    assert summary["engine"] == "pandas"
+    assert summary["software_versions"]["python"]
+    assert summary["max_rejected_fraction"] == 0.01
+    assert summary["valid_events"] == 5

@@ -11,6 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 from omnihealth.contracts import DataContractError, read_events
+from omnihealth.provenance import input_manifest
 from omnihealth.quality import validate_events
 from omnihealth.sessions import sessionize
 
@@ -78,6 +79,7 @@ def run_pipeline(
     raw = read_events(str(input_path), limit_rows)
     if raw.empty:
         raise DataContractError("Input CSV contains no event rows")
+    provenance = input_manifest(input_path, "pandas", limit_rows)
     validation = validate_events(raw)
     report = dict(validation.report)
     report["source_type"] = source_type
@@ -104,6 +106,8 @@ def run_pipeline(
     build_sqlite(events, sessions, output / "analytics" / "omnihealth.db")
 
     summary = {
+        **provenance,
+        "max_rejected_fraction": max_rejected_fraction,
         "project": "OmniHealth AI",
         "phase": "1 - clickstream analytics engineering",
         "source_type": source_type,

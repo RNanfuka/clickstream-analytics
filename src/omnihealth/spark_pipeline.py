@@ -16,6 +16,7 @@ from omnihealth.contracts import (
     DataContractError,
 )
 from omnihealth.pipeline import _write_json
+from omnihealth.provenance import input_manifest
 
 
 def run_spark_pipeline(
@@ -44,6 +45,7 @@ def run_spark_pipeline(
     source = Path(input_path)
     if not source.is_file():
         raise DataContractError(f"Input CSV not found: {source}")
+    provenance = input_manifest(source, "pyspark")
     output = Path(output_dir)
     spark = (
         SparkSession.builder.appName("OmniHealth-Phase1")
@@ -214,6 +216,8 @@ def run_spark_pipeline(
             F.sum("converted").alias("converted_sessions"),
         ).first()
         summary = {
+            **provenance,
+            "max_rejected_fraction": max_rejected_fraction,
             "project": "OmniHealth AI",
             "phase": "1 - distributed clickstream analytics engineering",
             "engine": "pyspark",
