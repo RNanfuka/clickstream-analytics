@@ -7,6 +7,25 @@ from omnihealth.contracts import DataContractError, read_events
 from omnihealth.quality import validate_events
 
 
+def test_nullable_values_and_repeated_indices_are_audited_without_crashing():
+    raw = pd.DataFrame(
+        [
+            ["1433221200000", "001", "view", "01", None],
+            [None, None, None, None, None],
+            ["1433221200000", "001", "transaction", "01", pd.NA],
+        ],
+        columns=["timestamp", "visitorid", "event", "itemid", "transactionid"],
+        index=[7, 7, 7],
+    )
+    outcome = validate_events(raw)
+    assert outcome.report["rows_valid"] == 1
+    assert outcome.report["rows_rejected"] == 2
+    assert set(outcome.rejected.iloc[0]["rejection_reason"].split(";")) == {
+        "invalid_timestamp", "missing_visitor_id", "missing_item_id", "invalid_event_type"
+    }
+    assert outcome.rejected.iloc[1]["rejection_reason"] == "invalid_transaction_id_for_event"
+
+
 def test_validation_rejects_multiple_errors_and_preserves_exact_duplicates():
     raw = pd.DataFrame(
         [

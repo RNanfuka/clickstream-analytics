@@ -32,7 +32,9 @@ def validate_events(raw: pd.DataFrame) -> ValidationResult:
     if missing:
         raise DataContractError(f"Missing required columns: {', '.join(sorted(missing))}")
 
-    raw = raw.loc[:, list(RAW_COLUMNS)].copy().astype("string")
+    # Normalize nullable values and positional row identities before building masks.
+    # Callers may supply repeated DataFrame indices, which are not source row IDs.
+    raw = raw.loc[:, list(RAW_COLUMNS)].copy().reset_index(drop=True).astype("string").fillna("")
     for col in RAW_COLUMNS:
         raw[col] = raw[col].str.strip()
 
