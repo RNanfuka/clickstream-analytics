@@ -78,6 +78,20 @@ FROM session_facts
 GROUP BY visitor_id
 ORDER BY visitor_id;
 
+DROP VIEW IF EXISTS v_session_engagement;
+CREATE VIEW v_session_engagement AS
+SELECT CASE WHEN event_count = 1 THEN '1 event'
+            WHEN event_count <= 5 THEN '2-5 events'
+            ELSE '6+ events' END AS engagement_band,
+       COUNT(*) AS session_count,
+       SUM(event_count) AS total_events,
+       SUM(converted) AS converted_sessions,
+       ROUND(1.0 * SUM(converted) / COUNT(*), 4) AS session_conversion_rate,
+       ROUND(AVG(duration_seconds), 2) AS average_duration_seconds
+FROM session_facts
+GROUP BY engagement_band
+ORDER BY MIN(event_count);
+
 -- Session stages are NOT guaranteed to occur in a view > cart > purchase order.
 DROP VIEW IF EXISTS v_session_stage_presence;
 CREATE VIEW v_session_stage_presence AS

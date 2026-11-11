@@ -15,6 +15,7 @@ VIEWS = {
     "stages": "v_session_stage_presence",
     "visitors": "v_visitor_kpis",
     "funnel": "v_ordered_session_funnel",
+    "engagement": "v_session_engagement",
 }
 
 

@@ -81,3 +81,15 @@ def test_ordered_funnel_excludes_reversed_and_simultaneous_events(tmp_path):
     assert funnel["sessions_with_later_purchase"] == 1
     assert funnel["view_to_purchase_rate"] == 0.3333
     assert read_report(output, "stages")["rows"][0]["sessions_with_transaction"] == 4
+
+
+def test_engagement_bands_partition_sessions_without_losing_events(completed_run):
+    rows = read_report(completed_run, "engagement")["rows"]
+    assert sum(row["session_count"] for row in rows) == 8
+    assert sum(row["total_events"] for row in rows) == 28
+    assert sum(row["converted_sessions"] for row in rows) == 4
+    assert {row["engagement_band"] for row in rows} <= {"1 event", "2-5 events", "6+ events"}
+    for row in rows:
+        assert row["session_conversion_rate"] == round(
+            row["converted_sessions"] / row["session_count"], 4
+        )
