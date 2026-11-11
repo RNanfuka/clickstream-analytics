@@ -87,7 +87,7 @@ def run_pipeline(
     if not validation.rejected.empty:
         quality_dir.mkdir(parents=True, exist_ok=True)
         validation.rejected.to_csv(quality_dir / "rejected_events.csv", index=False)
-    if report["rejected_fraction"] > max_rejected_fraction:
+    if report["rows_rejected"] / report["rows_read"] > max_rejected_fraction:
         raise DataContractError(
             "Data quality gate failed: "
             f"{report['rejected_fraction']:.2%} rejected > {max_rejected_fraction:.2%} allowed. "

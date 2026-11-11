@@ -10,12 +10,28 @@ import pytest
 
 pytest.importorskip("pyspark")
 
+from omnihealth.contracts import DataContractError  # noqa: E402
 from omnihealth.pipeline import run_pipeline  # noqa: E402
 from omnihealth.spark_pipeline import run_spark_pipeline  # noqa: E402
 
 pytestmark = pytest.mark.skipif(
     not os.environ.get("OMNIHEALTH_TEST_SPARK"), reason="Spark test is opt-in"
 )
+
+
+def test_spark_quality_threshold_uses_unrounded_fraction(tmp_path):
+    source = tmp_path / "boundary.csv"
+    source.write_text(
+        "timestamp,visitorid,event,itemid,transactionid\n"
+        "1433221200000,a,view,1,\n"
+        "1433221260000,a,view,2,\n"
+        "bad,a,view,1,\n"
+    )
+    with pytest.raises(DataContractError, match="quality gate"):
+        run_spark_pipeline(source, tmp_path / "spark", "synthetic_fixture",
+                           max_rejected_fraction=0.33333333)
+    assert (tmp_path / "spark" / "reports" / "rejected_events").exists()
+    assert not (tmp_path / "spark" / "processed").exists()
 
 
 def test_spark_etl_small_fixture(tmp_path):

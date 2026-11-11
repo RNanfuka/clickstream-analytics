@@ -124,7 +124,7 @@ def run_spark_pipeline(
                 .option("header", "true")
                 .csv(str(output / "reports" / "rejected_events"))
             )
-        if counts["rejected_fraction"] > max_rejected_fraction:
+        if counts["rows_rejected"] / counts["rows_read"] > max_rejected_fraction:
             raise DataContractError(
                 f"Data quality gate failed: {counts['rejected_fraction']:.2%} rejected "
                 f"> {max_rejected_fraction:.2%} allowed"

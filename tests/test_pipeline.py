@@ -84,3 +84,16 @@ def test_allowed_rejections_are_audited(tmp_path):
     assert summary["valid_events"] == 1
     assert (tmp_path / "out" / "reports" / "rejected_events.csv").exists()
     assert (tmp_path / "out" / "analytics" / "omnihealth.db").exists()
+
+
+def test_quality_threshold_uses_unrounded_fraction(tmp_path):
+    source = tmp_path / "boundary.csv"
+    source.write_text(
+        "timestamp,visitorid,event,itemid,transactionid\n"
+        "1433221200000,a,view,1,\n"
+        "1433221260000,a,view,2,\n"
+        "bad,a,view,1,\n"
+    )
+    with pytest.raises(DataContractError, match="quality gate"):
+        run_pipeline(source, tmp_path / "out", "synthetic_fixture",
+                     max_rejected_fraction=0.33333333)
