@@ -1,0 +1,133 @@
+{
+  "measured_at_utc": "2026-11-11T21:58:29.748280+00:00",
+  "source_tree_sha256": "d7a9d2a4efd7c3f306b17575321e7b65ab9fee47f7c4f0d27f62808d811d121a",
+  "data_scope": "Synthetic fixture and seeded synthetic benchmarks only",
+  "method": "Sequential pandas runs including validation, SHA-256, CSV, SQLite, and reports. Generation excluded; no dedicated warm-up; local filesystem cache uncontrolled.",
+  "machine": {
+    "system": "Darwin",
+    "architecture": "arm64",
+    "logical_cpus": 12
+  },
+  "tests": {
+    "tests": 47,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "fixture": {
+    "input_sha256": "844ff912be78fd63058619623357ba9696c3f22ffe83174a6519a5e3fa851f74",
+    "input_size_bytes": 1268,
+    "limit_rows": null,
+    "input_scope": "full_file",
+    "engine": "pandas",
+    "software_versions": {
+      "omnihealth": "0.5.0",
+      "python": "3.11.18",
+      "pandas": "2.3.3",
+      "numpy": "2.4.6"
+    },
+    "max_rejected_fraction": 0.01,
+    "project": "OmniHealth AI",
+    "phase": "1 - clickstream analytics engineering",
+    "source_type": "synthetic_fixture",
+    "input_file": "synthetic_retail_events.csv",
+    "data_domain": "retail_ecommerce_clickstream",
+    "clinical_or_patient_data_present": false,
+    "marketing_channel_data_present": false,
+    "conversion_definition": "session_contains_retail_transaction_event",
+    "session_gap_minutes": 30,
+    "input_rows": 28,
+    "valid_events": 28,
+    "sessions": 8,
+    "converted_sessions": 4,
+    "session_conversion_rate": 0.5,
+    "warning": "Sample-only metrics are not representative of full RetailRocket data",
+    "generated_at_utc": "2026-11-11T21:57:48.807880+00:00"
+  },
+  "reports": {
+    "overall": [
+      {
+        "session_count": 8,
+        "converted_sessions": 4,
+        "session_conversion_rate": 0.5,
+        "distinct_orders_within_sessions": 4,
+        "average_session_duration_seconds": 255.13
+      }
+    ],
+    "daily_events": [
+      {
+        "event_date": "2015-06-02",
+        "event_count": 28,
+        "unique_visitors": 5,
+        "views": 19,
+        "cart_adds": 4,
+        "transaction_events": 5
+      }
+    ],
+    "funnel": [
+      {
+        "total_sessions": 8,
+        "sessions_with_view": 8,
+        "sessions_with_later_cart": 4,
+        "sessions_with_later_purchase": 3,
+        "view_to_purchase_rate": 0.375
+      }
+    ],
+    "engagement": [
+      {
+        "engagement_band": "1 event",
+        "session_count": 2,
+        "total_events": 2,
+        "converted_sessions": 0,
+        "session_conversion_rate": 0.0,
+        "average_duration_seconds": 0.0
+      },
+      {
+        "engagement_band": "2-5 events",
+        "session_count": 6,
+        "total_events": 26,
+        "converted_sessions": 4,
+        "session_conversion_rate": 0.6667,
+        "average_duration_seconds": 340.17
+      }
+    ]
+  },
+  "benchmarks": [
+    {
+      "source_type": "synthetic_fixture",
+      "seed": 42,
+      "events": 10000,
+      "sessions": 2500,
+      "converted_sessions": 614,
+      "input_sha256": "3aa4c0b3a3f0ce730ccfb4bd688e35575bfba98ce5d1b9ef889c72257dce4a8d",
+      "elapsed_seconds": [
+        1.19521,
+        1.192826,
+        1.215187
+      ],
+      "median_seconds": 1.19521,
+      "median_events_per_second": 8367
+    },
+    {
+      "source_type": "synthetic_fixture",
+      "seed": 42,
+      "events": 100000,
+      "sessions": 25000,
+      "converted_sessions": 6303,
+      "input_sha256": "3747f889a576890cdc195fb7c0ae3b95f11ecaf6a1d8fa219b9e188701e7e103",
+      "elapsed_seconds": [
+        12.063784,
+        12.6566,
+        12.550826
+      ],
+      "median_seconds": 12.550826,
+      "median_events_per_second": 7968
+    }
+  ],
+  "limitations": [
+    "Not real RetailRocket observations",
+    "Not a distributed Spark benchmark",
+    "Timing varies with hardware, software versions, and filesystem caches",
+    "No machine learning model has been trained or evaluated"
+  ]
+}

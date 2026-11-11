@@ -32,9 +32,9 @@ Download the licensed RetailRocket `events.csv` into `data/raw/`, run the real-d
 
 ## Execution boundary
 
-On November 10, 2026, all **13 tests passed locally**, including the three opt-in Spark cases, using Python 3.11, PySpark 4.3, and Java 17.
+The latest [measured verification record](results/verification.json), generated on November 11, 2026, records **47 tests passing locally**, including four Spark cases. The environment uses Python 3.11, PySpark 4.3, and Java 17.
 
-The Spark checks verify the fixture's exact totals: 28 events, 8 sessions, 4 converted sessions, and a 0.5 conversion rate. Additional cases compare Spark and pandas with 30-minute and 5-minute inactivity thresholds, including an exact boundary, a gap beyond the boundary, unordered input, multiple visitors, and retained duplicate actions.
+The Spark checks verify the fixture's exact totals: 28 events, 8 sessions, 4 converted sessions, and a 0.5 conversion rate. Additional cases compare Spark and pandas with 30-minute and 5-minute inactivity thresholds, including an exact boundary, a gap beyond the boundary, unordered input, multiple visitors, and retained duplicate actions. A rejection-threshold case verifies that rounded reports cannot weaken the quality gate.
 
 Reproduce the full suite from an activated environment with:
 
