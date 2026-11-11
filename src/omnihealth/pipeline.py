@@ -13,6 +13,7 @@ import pandas as pd
 from omnihealth.contracts import DataContractError, read_events
 from omnihealth.provenance import input_manifest
 from omnihealth.quality import validate_events
+from omnihealth.run_state import pipeline_run
 from omnihealth.sessions import sessionize
 
 SQL_MARTS = files("omnihealth").joinpath("sql/marts.sql")
@@ -58,7 +59,7 @@ def build_sqlite(events: pd.DataFrame, sessions: pd.DataFrame, database_path: Pa
             temp_path.unlink()
 
 
-def run_pipeline(
+def _run_pipeline(
     input_path: str | Path,
     output_dir: str | Path,
     source_type: str,
@@ -129,3 +130,13 @@ def run_pipeline(
     }
     _write_json(quality_dir / "pipeline_summary.json", summary)
     return summary
+
+
+def run_pipeline(
+    input_path: str | Path, output_dir: str | Path, source_type: str,
+    gap_minutes: int = 30, max_rejected_fraction: float = 0.01,
+    limit_rows: int | None = None,
+) -> dict:
+    with pipeline_run(input_path, output_dir):
+        return _run_pipeline(input_path, output_dir, source_type, gap_minutes,
+                             max_rejected_fraction, limit_rows)

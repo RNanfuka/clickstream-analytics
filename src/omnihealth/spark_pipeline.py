@@ -17,9 +17,10 @@ from omnihealth.contracts import (
 )
 from omnihealth.pipeline import _write_json
 from omnihealth.provenance import input_manifest
+from omnihealth.run_state import pipeline_run
 
 
-def run_spark_pipeline(
+def _run_spark_pipeline(
     input_path: str | Path,
     output_dir: str | Path,
     source_type: str,
@@ -243,3 +244,12 @@ def run_spark_pipeline(
         if cached is not None:
             cached.unpersist()
         spark.stop()
+
+
+def run_spark_pipeline(
+    input_path: str | Path, output_dir: str | Path, source_type: str,
+    gap_minutes: int = 30, max_rejected_fraction: float = 0.01,
+) -> dict:
+    with pipeline_run(input_path, output_dir):
+        return _run_spark_pipeline(input_path, output_dir, source_type, gap_minutes,
+                                  max_rejected_fraction)
