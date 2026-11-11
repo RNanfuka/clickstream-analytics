@@ -10,7 +10,6 @@ import pytest
 from omnihealth.contracts import DataContractError
 from omnihealth.pipeline import run_pipeline
 
-
 SAMPLE = Path(__file__).resolve().parents[1] / "data" / "samples" / "synthetic_retail_events.csv"
 
 

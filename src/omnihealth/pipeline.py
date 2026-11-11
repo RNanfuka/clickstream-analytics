@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from datetime import UTC, datetime
 from importlib.resources import files
-from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -121,7 +121,7 @@ def run_pipeline(
         "warning": "Sample-only metrics are not representative of full RetailRocket data"
         if source_type == "synthetic_fixture" or limit_rows is not None
         else None,
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "generated_at_utc": datetime.now(UTC).isoformat(),
     }
     _write_json(quality_dir / "pipeline_summary.json", summary)
     return summary

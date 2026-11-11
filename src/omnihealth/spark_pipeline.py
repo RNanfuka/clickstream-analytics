@@ -6,7 +6,7 @@ all events to the driver, and it never treats retail events as health records.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from omnihealth.contracts import (
@@ -33,7 +33,8 @@ def run_spark_pipeline(
     if not 0 <= max_rejected_fraction <= 1:
         raise ValueError("max_rejected_fraction must be between 0 and 1")
     try:
-        from pyspark.sql import SparkSession, Window, functions as F
+        from pyspark.sql import SparkSession, Window
+        from pyspark.sql import functions as F
         from pyspark.storagelevel import StorageLevel
     except ImportError as exc:
         raise RuntimeError(
@@ -230,7 +231,7 @@ def run_spark_pipeline(
             "session_conversion_rate": round(totals["converted_sessions"] / totals["sessions"], 4),
             "warning": "Sample-only metrics are not representative of full RetailRocket data"
             if source_type == "synthetic_fixture" else None,
-            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "generated_at_utc": datetime.now(UTC).isoformat(),
         }
         _write_json(output / "reports" / "pipeline_summary.json", summary)
         return summary
