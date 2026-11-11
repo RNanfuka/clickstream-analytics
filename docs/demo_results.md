@@ -32,4 +32,14 @@ Download the licensed RetailRocket `events.csv` into `data/raw/`, run the real-d
 
 ## Execution boundary
 
-The local pandas pipeline and core tests were executed successfully in the repository construction environment. The PySpark integration test was not executed there because PySpark was unavailable; it remains opt-in for a Java-enabled local or CI environment.
+On November 10, 2026, all **13 tests passed locally**, including the three opt-in Spark cases, using Python 3.11, PySpark 4.3, and Java 17.
+
+The Spark checks verify the fixture's exact totals: 28 events, 8 sessions, 4 converted sessions, and a 0.5 conversion rate. Additional cases compare Spark and pandas with 30-minute and 5-minute inactivity thresholds, including an exact boundary, a gap beyond the boundary, unordered input, multiple visitors, and retained duplicate actions.
+
+Reproduce the full suite from an activated environment with:
+
+```bash
+OMNIHEALTH_TEST_SPARK=1 python -m pytest -q
+```
+
+These checks use small synthetic inputs. They do not establish performance on the full RetailRocket dataset or on a distributed cluster.

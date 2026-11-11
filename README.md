@@ -48,7 +48,7 @@ Subsequent phases extend the platform to predictive modeling, application interf
 | FastAPI and Streamlit | **Not yet implemented** | Planned Phase 3 |
 | Cloud deployment | **Not yet implemented** | Planned Phase 4 |
 
-The Spark route is provided as **optional code**; this release's verified execution record covers the pandas pipeline. Run the opt-in Spark test in your Java-enabled environment before treating it as verified.
+The optional Spark route has been verified locally with Java 17 on the synthetic fixture and session-boundary cases. Its tests check exact conversion metrics and agreement with pandas at two inactivity thresholds. See the [execution evidence](docs/demo_results.md); full-dataset performance remains unmeasured.
 
 ## Development environment (Conda, including Spark)
 

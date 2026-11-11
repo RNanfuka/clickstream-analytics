@@ -4,7 +4,7 @@
 
 **Task:** I designed OmniHealth AI as a data-solutions portfolio system. The goal is to demonstrate how to transform raw event data into validated, interpretable analytics, with a future pathway to healthcare-inspired omnichannel scenarios.
 
-**Actions:** I chose public RetailRocket e-commerce events rather than pretending to have pharmaceutical records. I documented the exact data contract, implemented typed ingestion and rejection auditing, inferred 30-minute inactivity sessions, exposed explicit transaction-presence KPIs in SQL, and added portable tests, CI and containerization. I designed an optional Spark execution path that writes Parquet at scale; its integration testing is an explicit next verification task.
+**Actions:** I chose public RetailRocket e-commerce events rather than pretending to have pharmaceutical records. I documented the exact data contract, implemented typed ingestion and rejection auditing, inferred 30-minute inactivity sessions, exposed explicit transaction-presence KPIs in SQL, and added portable tests, CI and containerization. I designed an optional Spark execution path that writes Parquet and verified its synthetic-fixture metrics and session-boundary behavior against pandas. Performance at scale remains unmeasured.
 
 **Result so far:** The local end-to-end implementation successfully processes the **synthetic retail verification fixture** and produces event facts, session facts, an SQLite analytics database and lineage-aware quality reports. The tests pass. This proves the engineering workflow works on the fixture, **not** that a model improves outcomes or that any pharma campaign has been evaluated.
 
