@@ -47,3 +47,14 @@ def test_csv_export_keeps_source_labels_and_metric_values(completed_run):
     assert rows[0]["event_count"] == "28"
     assert rows[0]["source_type"] == "synthetic_fixture"
     assert rows[0]["input_sha256"] == report["input_sha256"]
+
+
+def test_visitor_metrics_reconcile_with_session_and_event_totals(completed_run):
+    rows = read_report(completed_run, "visitors")["rows"]
+    assert len(rows) == 5
+    assert sum(row["session_count"] for row in rows) == 8
+    assert sum(row["event_count"] for row in rows) == 28
+    assert sum(row["converted_sessions"] for row in rows) == 4
+    for row in rows:
+        assert row["first_observed_session"] <= row["last_observed_event"]
+        assert (row["observed_session_type"] == "multiple_sessions") == (row["session_count"] > 1)

@@ -34,6 +34,21 @@ SELECT
     ROUND(AVG(duration_seconds), 2) AS average_session_duration_seconds
 FROM session_facts;
 
+DROP VIEW IF EXISTS v_visitor_kpis;
+CREATE VIEW v_visitor_kpis AS
+SELECT visitor_id,
+       COUNT(*) AS session_count,
+       SUM(event_count) AS event_count,
+       SUM(converted) AS converted_sessions,
+       SUM(order_count) AS distinct_orders_within_sessions,
+       MIN(session_start) AS first_observed_session,
+       MAX(session_end) AS last_observed_event,
+       CASE WHEN COUNT(*) > 1 THEN 'multiple_sessions' ELSE 'one_session' END
+           AS observed_session_type
+FROM session_facts
+GROUP BY visitor_id
+ORDER BY visitor_id;
+
 -- Session stages are NOT guaranteed to occur in a view > cart > purchase order.
 DROP VIEW IF EXISTS v_session_stage_presence;
 CREATE VIEW v_session_stage_presence AS

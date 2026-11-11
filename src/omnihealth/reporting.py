@@ -13,6 +13,7 @@ VIEWS = {
     "daily_events": "v_daily_events",
     "daily_sessions": "v_daily_session_kpis",
     "stages": "v_session_stage_presence",
+    "visitors": "v_visitor_kpis",
 }
 
 
