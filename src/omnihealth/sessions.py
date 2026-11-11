@@ -18,7 +18,8 @@ def sessionize(events: pd.DataFrame, gap_minutes: int = 30) -> tuple[pd.DataFram
         raise ValueError("Cannot sessionize an empty validated dataset")
 
     enriched = events.sort_values(
-        ["visitor_id", "event_ts", "event_type", "item_id"], kind="mergesort"
+        ["visitor_id", "event_ts", "event_type", "item_id", "transaction_id"],
+        kind="mergesort", na_position="first",
     ).reset_index(drop=True).copy()
     gaps = enriched.groupby("visitor_id", sort=False)["event_ts"].diff()
     starts = gaps.isna() | gaps.gt(pd.Timedelta(minutes=gap_minutes))

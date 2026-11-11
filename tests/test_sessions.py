@@ -40,3 +40,27 @@ def test_nonpositive_gap_raises():
     frame = _events([["1433221200000", "a", "view", "1", ""]])
     with pytest.raises(ValueError, match="positive"):
         sessionize(frame, gap_minutes=0)
+
+
+def test_equal_timestamp_order_is_independent_of_input_order():
+    frame = _events([
+        ["1433221200000", "a", "transaction", "1", "order_b"],
+        ["1433221200000", "a", "transaction", "1", "order_a"],
+        ["1433221200000", "a", "view", "1", ""],
+    ])
+    events, sessions = sessionize(frame)
+    reversed_events, reversed_sessions = sessionize(frame.iloc[::-1])
+    pd.testing.assert_frame_equal(events, reversed_events)
+    pd.testing.assert_frame_equal(sessions, reversed_sessions)
+    assert sessions.iloc[0]["order_count"] == 2
+
+
+def test_session_crossing_midnight_keeps_one_session():
+    frame = _events([
+        ["1433289540000", "a", "view", "1", ""],  # 23:59 UTC
+        ["1433289660000", "a", "transaction", "1", "order_a"],
+    ])
+    events, sessions = sessionize(frame)
+    assert events["event_date"].nunique() == 2
+    assert len(sessions) == 1
+    assert sessions.iloc[0]["duration_seconds"] == 120
