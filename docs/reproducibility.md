@@ -19,3 +19,7 @@ An exclusive `.omnihealth.lock` prevents simultaneous writes to one destination.
 JSON and SQLite files use unique temporary files and replacement. This prevents readers from seeing partially serialized individual files, but it does not make a whole run transactional. The report command requires completed status. Spark writes Parquet directories and does not support the SQLite report command.
 
 Input files should remain unchanged during a run. A fixed input, configuration, and software environment should reproduce analytical values. Run timestamps and measured durations will differ.
+
+## Local commands
+
+`make validate`, `make demo`, and `make report` inspect the fixture, process it, and show its results. `make test-all` runs the full suite including Spark. The Makefile prefers the project environment, locates its Java installation, and supplies the same Python executable to Spark workers. Local Spark commands default to two workers and two shuffle partitions. Explicit `PYTHON`, `JAVA_HOME`, and `PYSPARK_SUBMIT_ARGS` overrides are respected.
