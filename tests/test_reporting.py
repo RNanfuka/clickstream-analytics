@@ -1,9 +1,11 @@
+import csv
+import io
 import json
 
 import pytest
 
 from omnihealth.pipeline import run_pipeline
-from omnihealth.reporting import read_report
+from omnihealth.reporting import read_report, report_csv
 
 
 @pytest.fixture
@@ -36,3 +38,12 @@ def test_missing_run_does_not_create_database(tmp_path):
     with pytest.raises(ValueError, match="status is missing"):
         read_report(tmp_path)
     assert not list(tmp_path.iterdir())
+
+
+def test_csv_export_keeps_source_labels_and_metric_values(completed_run):
+    report = read_report(completed_run, "daily_events")
+    rows = list(csv.DictReader(io.StringIO(report_csv(report))))
+    assert len(rows) == 1
+    assert rows[0]["event_count"] == "28"
+    assert rows[0]["source_type"] == "synthetic_fixture"
+    assert rows[0]["input_sha256"] == report["input_sha256"]
