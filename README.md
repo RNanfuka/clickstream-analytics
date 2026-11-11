@@ -1,22 +1,38 @@
 # OmniHealth AI
 
-**A reproducible clickstream analytics and ML engineering platform.**
+### Marketing Intelligence and Predictive Analytics Platform
 
-[![OmniHealth CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF)](./.github/workflows/ci.yml)
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB)
-![Status](https://img.shields.io/badge/Phase_1-Implemented-2E8B57)
+An end-to-end data science and analytics platform designed to transform digital engagement data into actionable marketing intelligence through scalable data engineering, machine learning, and interactive analytics.
+
+**Python | SQL | PySpark | Scikit-learn | FastAPI | Streamlit | Docker | GitHub Actions**
+
+### Overview
+
+OmniHealth AI explores how organizations can leverage digital interaction data to understand customer journeys, identify conversion opportunities, and build reliable predictive analytics solutions.
+
+The platform is designed around three core capabilities:
+
+- **Data Engineering:** Build reproducible pipelines for event processing, data quality validation, sessionization, and analytical reporting.
+- **Marketing Analytics:** Analyze engagement patterns, conversion funnels, user journeys, and behavioral trends to support data-driven decision-making.
+- **Predictive Intelligence:** Develop and evaluate machine learning models for conversion propensity, with a foundation for future deployment and monitoring.
+
+### Business Problem
+
+Marketing teams generate large volumes of digital interaction data, yet converting these events into reliable, decision-ready insights remains challenging.
+
+OmniHealth AI addresses this challenge by developing an extensible analytics architecture that connects data processing, behavioral analysis, and predictive modeling.
+
+The long-term application focuses on omnichannel healthcare and pharmaceutical marketing intelligence, including campaign engagement, audience segmentation, and conversion optimization.
+
+### Current Implementation
+
+**Phase 1 — Data Engineering and Analytics Foundation**
+
+The implemented foundation includes Python-based ETL processing, data quality checks, behavioral sessionization, SQL analytics, an optional PySpark processing path, automated testing, and containerization.
+
+Subsequent phases extend the platform to predictive modeling, application interfaces, and healthcare marketing simulations.
 
 > **Evidence and domain disclaimer:** Phase 1 uses the **real, anonymized RetailRocket retail e-commerce dataset**, NOT healthcare records. A small, explicitly labeled **synthetic retail test fixture** is included solely to verify the code. The data has no actual marketing channels or healthcare context. The term *OmniHealth* describes the planned application domain, not the source data. Future synthetic healthcare scenarios must remain separately labeled.
-
-## The problem we're solving
-
-Teams need trustworthy, consistent answers to questions such as:
-- Which website actions correlate with completing a purchase?
-- How many sessions end in a transaction event, and how does that vary over time?
-- Can we detect changing digital engagement patterns before building a propensity model?
-- How can we convert event streams into reproducible analytics, without inventing channels or attributing causality?
-
-The initial demonstration uses retail transaction events as an **observable conversion proxy**. It does not measure ad attribution, pharma campaign lift, clinician behavior, or patient outcomes.
 
 ## Implemented: Phase 1
 
