@@ -8,8 +8,9 @@ Each milestone is a tagged, testable increment. Tags mark completed capabilities
 | v0.2.0 | Trustworthy input handling | Explicit CSV errors, nullable-value auditing, exact quality thresholds, deterministic sessions, validation CLI |
 | v0.3.0 | Reproducible and reliable runs | Input hashes, software versions, run status, output locks, isolated file writes, JSON and CSV reports |
 | v0.4.0 | Behavioral analytics and shareable reports | Visitor and engagement summaries, strictly ordered session funnel, Markdown exports, seeded synthetic generator |
+| v0.5.0 | Verified delivery and measured results | 47 passing tests, Python 3.11/3.12 CI, installed-wheel check, non-root Docker demo, documented 10k/100k-event benchmarks |
 
-The next milestones will cover reproducible runs, useful analytical reports, and measured delivery quality. Only completed milestones receive tags.
+The five milestones complete the current engineering and descriptive analytics scope. Future model training, API/dashboard development, and cloud deployment remain on the [roadmap](roadmap.md). Release notes are stored in [`.github/release-notes`](../.github/release-notes/).
 
 ## Learning sequence
 

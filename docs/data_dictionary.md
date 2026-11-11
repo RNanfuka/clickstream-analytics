@@ -45,6 +45,9 @@ No `revenue`, `attributed_conversion`, `campaign_roi`, or `customer_lifetime_val
 - `v_daily_session_kpis`: by **session start date**, session count, converted sessions, converted session share, order count within sessions.
 - `v_overall_kpis`: all-session summary including average recorded session duration.
 - `v_session_stage_presence`: number of sessions containing views/carts/transactions, independently of event sequence.
+- `v_ordered_session_funnel`: sessions with a view, a strictly later cart, and a strictly later transaction. The view-to-purchase rate divides complete paths by sessions with a view. Equal timestamps do not establish order; this is not an item-level funnel.
+- `v_visitor_kpis`: observed sessions, event totals, converted sessions, and first/last observed activity per visitor. Multiple observed sessions do not establish lifetime retention.
+- `v_session_engagement`: partitions sessions into 1, 2–5, and 6+ events, reporting counts, conversion, and average duration. These groups do not define a web analytics bounce rate.
 
 **Conversion rate** = `converted_sessions / session_count`. This is a *descriptive proxy*. It does not imply exposure, marketing incrementality, attribution or controlled lift.
 

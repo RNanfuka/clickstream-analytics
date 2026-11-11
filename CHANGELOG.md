@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 — Verified delivery and measured results
+
+- Verify wheel installation and packaged SQL outside the source directory.
+- Use one package-version definition and consistent Python/Java selection for local Spark.
+- Run Python 3.11/3.12, Spark, package, and non-root container checks in GitHub CI.
+- Record 47 passing tests and reproducible 10,000/100,000-event synthetic benchmarks.
+- Publish a results-led README, five milestone summaries, and a step-by-step learning guide.
+
 ## 0.4.0 — Behavioral analytics and reports
 
 - Add visitor summaries and engagement groups with reconciled totals.
