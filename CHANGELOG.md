@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 — Behavioral analytics and reports
+
+- Add visitor summaries and engagement groups with reconciled totals.
+- Measure strictly ordered view/cart/transaction sequences separately from stage presence.
+- Export shareable Markdown with source labels and escaped identifiers.
+- Generate seeded synthetic event files with independently known expected metrics.
+
 ## 0.3.0 — Reproducible and reliable runs
 
 - Record content fingerprints, processing configuration, and software versions.
