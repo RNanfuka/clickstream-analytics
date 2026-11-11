@@ -6,6 +6,9 @@ COPY pyproject.toml README.md ./
 COPY src/ ./src/
 COPY data/samples/ ./data/samples/
 RUN python -m pip install --no-cache-dir .
-RUN mkdir -p /app/artifacts
+RUN useradd --create-home --uid 10001 analyst \
+    && mkdir -p /app/artifacts \
+    && chown analyst:analyst /app/artifacts
+USER analyst
 ENTRYPOINT ["omnihealth"]
 CMD ["run", "--input", "data/samples/synthetic_retail_events.csv", "--output-dir", "artifacts/demo", "--source-type", "synthetic_fixture"]
