@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import html
 import io
 import json
 import sqlite3
@@ -54,3 +55,26 @@ def report_csv(report: dict) -> str:
     writer.writeheader()
     writer.writerows({**provenance, **row} for row in report["rows"])
     return stream.getvalue()
+
+
+def report_markdown(report: dict) -> str:
+    def cell(value):
+        if value is None:
+            return "—"
+        return html.escape(str(value)).replace("|", "\\|").replace("\n", " ")
+
+    label = (
+        "Synthetic data: software verification only; not observed customer behavior."
+        if report["source_type"] == "synthetic_fixture"
+        else "RetailRocket retail data: descriptive observations, not campaign attribution."
+    )
+    lines = [f"# {report['report'].replace('_', ' ').title()} report", "", label, "",
+             f"Input SHA-256: `{report['input_sha256']}`", "",
+             "| " + " | ".join(cell(column) for column in report["columns"]) + " |",
+             "| " + " | ".join("---" for _ in report["columns"]) + " |"]
+    for row in report["rows"]:
+        lines.append("| " + " | ".join(cell(row[column]) for column in report["columns"]) + " |")
+    lines.extend(["", "Conversion means a session containing a retail transaction. "
+                  "The ordered funnel requires strictly increasing timestamps; "
+                  "stage presence alone does not establish that sequence.", ""])
+    return "\n".join(lines)

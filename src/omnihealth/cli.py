@@ -9,7 +9,7 @@ from omnihealth import __version__
 from omnihealth.contracts import DataContractError, read_events
 from omnihealth.pipeline import run_pipeline
 from omnihealth.quality import validate_events
-from omnihealth.reporting import VIEWS, read_report, report_csv
+from omnihealth.reporting import VIEWS, read_report, report_csv, report_markdown
 
 
 def positive_integer(value: str) -> int:
@@ -33,7 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
     report = subparsers.add_parser("report", help="Read metrics from a completed pandas run")
     report.add_argument("--output-dir", required=True)
     report.add_argument("--view", choices=sorted(VIEWS), default="overall")
-    report.add_argument("--format", choices=["json", "csv"], default="json")
+    report.add_argument("--format", choices=["json", "csv", "markdown"], default="json")
     validate = subparsers.add_parser("validate", help="Inspect CSV quality without writing outputs")
     validate.add_argument("--input", required=True)
     validate.add_argument("--source-type", required=True,
@@ -105,6 +105,8 @@ def main() -> None:
         parser.exit(2, f"error: {exc}\n")
     if args.command == "report" and args.format == "csv":
         print(report_csv(summary), end="")
+    elif args.command == "report" and args.format == "markdown":
+        print(report_markdown(summary), end="")
     else:
         print(json.dumps(summary, indent=2))
     if args.command == "validate" and not summary["validation_passed"]:

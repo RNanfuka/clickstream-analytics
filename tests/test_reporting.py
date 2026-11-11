@@ -5,7 +5,7 @@ import json
 import pytest
 
 from omnihealth.pipeline import run_pipeline
-from omnihealth.reporting import read_report, report_csv
+from omnihealth.reporting import read_report, report_csv, report_markdown
 
 
 @pytest.fixture
@@ -93,3 +93,13 @@ def test_engagement_bands_partition_sessions_without_losing_events(completed_run
         assert row["session_conversion_rate"] == round(
             row["converted_sessions"] / row["session_count"], 4
         )
+
+
+def test_shareable_report_retains_provenance_and_escapes_identifiers(completed_run):
+    report = read_report(completed_run, "visitors")
+    report["rows"][0]["visitor_id"] = "<script>|visitor\nname"
+    markdown = report_markdown(report)
+    assert "Synthetic data: software verification only" in markdown
+    assert report["input_sha256"] in markdown
+    assert "<script>" not in markdown
+    assert "&lt;script&gt;\\|visitor name" in markdown
